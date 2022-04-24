@@ -47,7 +47,7 @@ In this step genes considered paralogous from result of the allelecall (see abov
 # Command:
 ```
 # run remove genes
-chewBBACA.py RemoveGenes -i results_cg/results_20220319T103614/results_alleles.tsv -g results_cg/results_20220319T103614/RepeatedLoci.txt -o alleleCallMatrix_cg
+chewBBACA.py RemoveGenes -i results_cg/results_20220409T103456/results_alleles.tsv -g results_cg/results_20220409T103456/RepeatedLoci.txt -o alleleCallMatrix_cg
 ```
 In this step, 85 genes were identified as possible paralogs and were removed from further analysis. 
 
@@ -89,27 +89,27 @@ tail -n+1 Genes_Core_Al.txt | cut -f2 | perl -pe 's: :\n:g' | sort -Vu | awk '{p
 ```
 # Step 3: Scheme Validation (Allele calling)
 For the validation step we selected 635 drafts P. mirabilis genomes that were publicly available in RefSeq (https://www.ncbi.nlm.nih.gov/assembly) in September  2021. The list of all the draft genomes used can be found in the file Genomes_Validation.xlsx.
-We this set of genomes (635 drafts genomes) we repeated the allele call step using only the 1842 candidate target genes.
+We this set of genomes (635 drafts genomes) we repeated the allele call step using only the 2299 candidate target genes.
 # Command:
 ```
 chewBBACA.py AlleleCall -i ../unfinished-genome/ --gl list_genes_core.txt -o ../results_all --cpu 46  -g ../schema_seed/schema_seed --ptf HI4320.trn
 The folder unfinished-genome contains the 635 validation drafts genomes used for validation of the scheme.
 ```
 # Step 3.1: Concatenate the allelic profiles
-The purpose of this step is to concatenate the matrix of the loci that defined the scheme and the matrix of the loci from the validation genomes. Thus, to concatenate the allelic profile matrix obtained from the creation of the scheme cgMLST_55/cgMLST.tsv with the matrix obtained for the validation genomes results_all/ results_20191126T121343/results_alleles.tsv. The following command was used:
+The purpose of this step is to concatenate the matrix of the loci that defined the scheme and the matrix of the loci from the validation genomes. Thus, to concatenate the allelic profile matrix obtained from the creation of the scheme cgMLST_55/cgMLST.tsv with the matrix obtained for the validation genomes results_all/ results_20220409T125210/results_alleles.tsv. The following command was used:
 # Command:
 ```
 # create header
 head -n 1 cgMLST_55/cgMLST.tsv > cgMLST_all.tsv
 ```
-cgMLST_all.tsv file (cgMLST_all.tsv) contains the allelic profile of the  drafts genomes.
+cgMLST_all.tsv file (cgMLST_all.tsv) contains the allelic profile of the drafts genomes.
 
 # Step 3.2: Evaluation of genome quality
 # Command:
 ```
 chewBBACA.py TestGenomeQuality -i cgMLST_all.tsv -n 13 -t 300 -s 5
 ```
-After concatenation, we used the TestGenomeQuality to assess the impact of each validation genome on candidate loci in order to exclude low quality validation genomes. In this step you may need to define a new Threshold, as well as a new value of the parameter p, because loci that remain after the filters are the ones that will constituted the final scheme.
+After concatenation, we used the TestGenomeQuality to assess the impact of each validation genome on candidate loci in order to exclude low quality validation genomes. In this step you may need to define a new Threshold, as well as a new value of the parameter t, because loci that remain after the filters are the ones that will constituted the final scheme.
 
 # Step 4: Extracting the Matrix loci
 At this step we chose loci present in 99% (--t 0.99) of the validation genomes and the Threshold 135 to limit the loss of the loci in the genomes.
@@ -124,8 +124,6 @@ chewBBACA.py ExtractCgMLST -i cgMLST_all.tsv -o cgMLST_135 --t 0.99 --g removedG
 This script selects loci and genomes that remained in the Threshold 135 and excludes the validation genomes and loci that were excluded with this Threshold.
 The folder with the output file can be found at: cgMLST_135. This folder contains four files "cgMLST.tsv; cgMLSTschema.txt; mdata_stats.tsv and Presence_Absence.tsv".
 The cgMLST targets can be found at: cgMLST_135/cgMLSTschema.txt It contains the list of 1842 genes in the core genome defined as targets for this scheme. 
-The list with the 1842 cgMLST gene targets with the path added for each locus fasta file to be searched in the schema_seed folder is in the folder:cgMLST_135/gene_targets.txt
-
 
 # Step 5: Minimum Spanning Tree
 For the visualization of results, minimum spanning trees were buitl. Based on the allelic profiles obtained by the cgMLST scheme for each of the 695 genomes minimum spanning trees (MST) were constructed using the software GrapeTree (version 2.1.0) (https://github.com/achtman-lab/GrapeTree/releases) with parameters implemented in MSTree v2 ignoring missing values for the entire strain collection. The cgMLST_135/cgMLST.tsv file contains the allelic profile of the 695 genomes typed by cgMLST.
